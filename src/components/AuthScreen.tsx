@@ -13,20 +13,39 @@ export default function AuthScreen({ onLogin }: AuthScreenProps) {
   const [state, setState] = useState('');
   const [district, setDistrict] = useState('');
 
-  const handlePhoneSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (phoneNumber.length === 10) {
-      setStep('otp');
+const handlePhoneSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (phoneNumber.length === 10) {
+    const res = await fetch("http://localhost:3000/send-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: phoneNumber }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      setStep("otp");
+    } else {
+      alert("Failed to send OTP: " + data.error);
     }
-  };
+  }
+};
 
-  const handleOtpSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (otp.length === 6) {
-      setStep('profile');
+const handleOtpSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (otp.length === 6) {
+    const res = await fetch("http://localhost:3000/verify-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: phoneNumber, code: otp }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      setStep("profile");
+    } else {
+      alert("Invalid OTP");
     }
-  };
-
+  }
+};
   const handleProfileSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (name && state && district) {
