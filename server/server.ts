@@ -19,6 +19,15 @@ app.use(cors({
 // Middleware to parse incoming JSON request bodies
 app.use(bodyParser.json());
 
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Endless Harvesting OTP Service is running!',
+    status: 'active',
+    endpoints: ['/send-otp', '/verify-otp']
+  });
+});
+
 // Initialize Twilio client with credentials from .env
 const client = new Twilio(
   process.env.TWILIO_ACCOUNT_SID!,
